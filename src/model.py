@@ -14,7 +14,7 @@ class PoseEstimator():
         self.cam_queue = deque()
         self.vid_queue = deque()
         self.quanta = [1,1]
-        self.results = ({},{}) # 0 for cam, 1 for yt
+        self.results = ({},{},{}) # 0 for cam, 1 for yt, 2 for sentinel
         # set up so that inference in background
         self.inputs = Queue()
         self.outputs = Queue()
@@ -56,28 +56,18 @@ class PoseEstimator():
         else:
             return None # Deferred??
 
-    def kill(self, key, mode):
+    def kill(self):
         """
         Call this when done with the model to allow process to terminate
         """
         self.inputs.put("Done")
-        while self.query(key, mode) is None:
+        while self.query(0, 2) is None:
             continue
         self.proc.join()
 
     def load_model(self, ckpt=None):
         self.movenet = tf.lite.Interpreter(model_path='model.tflite')
         self.movenet.allocate_tensors()
-
-    def add_to_queue(self, image, key, mode):
-        """
-        image should be tensor of shape HxWx3
-        mode: 0 for webcam, 1 for video
-        """
-        if mode == 0:
-            self.cam_queue.append((image, key))
-        else:
-            self.vid_queue.append((image, key))
 
     def polling(self, inputs, outputs):
         self.load_model()
@@ -87,19 +77,12 @@ class PoseEstimator():
             msg = inputs.get()
             if msg:
                 if msg == "Done":
+                    outputs.put(("Done", 0, 2))
                     break
                 image, key, mode = msg
-                self.add_to_queue(image, key, mode)
-            # do inference if possible
-            for i, queue in enumerate([self.cam_queue, self.vid_queue]):
-                if self.quanta[i] > 0 and len(queue) > 0:
-                    self.quanta[i] -= 1
-                    img, k = queue.popleft()
-                    result = self.predict_image(img)
-                    print('hi')
-                    outputs.put((result, k, i))
-            self.quanta[0] = min(self.quanta[0] + 1, 6)
-            self.quanta[1] = min(self.quanta[1] + 1, 6)
+                queue = [self.cam_queue, self.vid_queue][mode]
+                result = self.predict_image(image)
+                outputs.put((result, key, mode))
 
     def predict_image(self, image):
         """
@@ -116,7 +99,7 @@ class PoseEstimator():
 
 if __name__=="__main__":
     model = PoseEstimator()
-    """
+    
     image = cv2.cvtColor(cv2.imread("pose_test.png"), cv2.COLOR_BGR2RGB)
     print(image.shape)
     model.pass_to_proc(image, 1, 0)
@@ -158,6 +141,6 @@ if __name__=="__main__":
     # import json
     # with open('pose_data.json', 'w', encoding='utf-8') as f:
     #     json.dump(results, f, ensure_ascii=False, indent=4)
-
+    """
     model.kill()
 
