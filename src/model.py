@@ -7,7 +7,6 @@ from multiprocessing import Process, Queue
 
 class PoseEstimator():
     def __init__(self) -> None:
-        self.load_model()
         idxs = []
         for i in range(17):
             idxs.append(3*i)
@@ -16,15 +15,11 @@ class PoseEstimator():
         self.vid_queue = deque()
         self.quanta = [1,1]
         self.results = ({},{}) # 0 for cam, 1 for yt
-        self.inp_details = self.movenet.get_input_details()[0]['index']
-        self.out_details = self.movenet.get_output_details()[0]['index']
-        
         # set up so that inference in background
         self.inputs = Queue()
         self.outputs = Queue()
         self.proc = Process(target=self.polling,args=(self.inputs, self.outputs))
         self.proc.start()
-
     
     def pass_to_proc(self, image, key, mode):
         """
@@ -61,11 +56,13 @@ class PoseEstimator():
         else:
             return None # Deferred??
 
-    def kill(self):
+    def kill(self, key, mode):
         """
         Call this when done with the model to allow process to terminate
         """
         self.inputs.put("Done")
+        while self.query(key, mode) is None:
+            continue
         self.proc.join()
 
     def load_model(self, ckpt=None):
@@ -83,6 +80,9 @@ class PoseEstimator():
             self.vid_queue.append((image, key))
 
     def polling(self, inputs, outputs):
+        self.load_model()
+        self.inp_details = self.movenet.get_input_details()[0]['index']
+        self.out_details = self.movenet.get_output_details()[0]['index']
         while True:
             msg = inputs.get()
             if msg:
@@ -96,6 +96,7 @@ class PoseEstimator():
                     self.quanta[i] -= 1
                     img, k = queue.popleft()
                     result = self.predict_image(img)
+                    print('hi')
                     outputs.put((result, k, i))
             self.quanta[0] = min(self.quanta[0] + 1, 6)
             self.quanta[1] = min(self.quanta[1] + 1, 6)
@@ -140,23 +141,23 @@ if __name__=="__main__":
     print(f"Time elapsed for {num_iter} iterations: {time.time() - start}") 
     """
     import glob
-    files = glob.glob("pose_samples/*")
-    for file in files:
-        image = cv2.cvtColor(cv2.imread(file), cv2.COLOR_BGR2RGB)
-        model.pass_to_proc(image, file, 0)
-    results = []
-    for file in files:
-        result = model.query(file, 0)
-        while result is None:
-            time.sleep(0.1)
-            result = model.query(file, 0)
-        results.append({
-            "file": file,
-            "output": result.tolist(),
-        })
-    import json
-    with open('pose_data.json', 'w', encoding='utf-8') as f:
-        json.dump(results, f, ensure_ascii=False, indent=4)
+    # files = glob.glob("pose_samples/*")
+    # for file in files:
+    #     image = cv2.cvtColor(cv2.imread(file), cv2.COLOR_BGR2RGB)
+    #     model.pass_to_proc(image, file, 0)
+    # results = []
+    # for file in files:
+    #     result = model.query(file, 0)
+    #     while result is None:
+    #         time.sleep(0.1)
+    #         result = model.query(file, 0)
+    #     results.append({
+    #         "file": file,
+    #         "output": result.tolist(),
+    #     })
+    # import json
+    # with open('pose_data.json', 'w', encoding='utf-8') as f:
+    #     json.dump(results, f, ensure_ascii=False, indent=4)
 
     model.kill()
 

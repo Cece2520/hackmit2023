@@ -6,6 +6,7 @@ import time
 import numpy as np
 import yt_dlp
 from video_data import *
+from model import *
 
 def geturl():
     video_url = ent.get()
@@ -15,13 +16,15 @@ def geturl():
     videofps.set(fps)
     framenum.set(0)
     capurl.set(url)
-    # print(url)  
     
 def playPause():
     start = startpause['text']
     startpause['text'] = 'Pause' if start == 'Start' else 'Start'
     prevtime.set(time.time())
-    # Other things 
+
+def quittkinter():
+    model.kill(framenum.get() - framenum.get() % 3, 1)
+    root.destroy()
     
 root = Tk()
 
@@ -68,20 +71,23 @@ scorelbl = Label(master=scorefrm, text='N/A',bg='white')
 scorelbl.pack(pady=5)
 scorefrm.pack(fill=X)
 
+quit = Button(root, text='Quit', command=quittkinter)
+quit.pack()
+
 # Capture from camera
 webcap = cv2.VideoCapture(0)
 videocap = [None]
+model = None
 
 # function for video streaming
 def video_stream():
-    _, frame = webcap.read()
-    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    _, frame1 = webcap.read()
+    frame1 = cv2.flip(frame1, 1)
+    cv2image = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGBA)
     img = Image.fromarray(cv2image)
     imgtk = ImageTk.PhotoImage(image=img)
     webl.imgtk = imgtk
     webl.configure(image=imgtk)
-    # youtubel.imgtk = imgtk
-    # youtubel.configure(image=imgtk)
     if startpause['text'] == 'Pause':
         if capurl.get():
             print('here')
@@ -97,17 +103,22 @@ def video_stream():
         prevtime.set(timer)
         if int(newtime*videofps.get()) > framenum.get():
             framenum.set(framenum.get() + 1)
-            ret, frame = videocap[0].read()
+            ret, frame2 = videocap[0].read()
             if ret:
-                cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+                if framenum.get() % 3 == 0:
+                    model.pass_to_proc(frame1, framenum.get(), 0)
+                    model.pass_to_proc(frame2, framenum.get(), 1)
+                cv2image = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGBA)
                 img = Image.fromarray(cv2image)
                 imgtk = ImageTk.PhotoImage(image=img)
                 youtubel.imgtk = imgtk
                 youtubel.configure(image=imgtk)
             else:
                 startpause['text'] == 'Start'
-    videos.after(1, video_stream) 
+        # q = model.query(framenum.get(), 0)
+    videos.after(10, video_stream) 
     
-
-video_stream()
-root.mainloop()
+if __name__ == '__main__':
+    model = PoseEstimator()
+    video_stream()
+    root.mainloop()
