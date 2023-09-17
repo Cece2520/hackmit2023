@@ -1,4 +1,5 @@
 from tkinter import *
+from customtkinter import *
 from PIL import ImageTk, Image
 import cv2
 import tensorflow as tf
@@ -13,17 +14,18 @@ def geturl():
     timestamp.set(0)
     exacttime.set(0)
     url, fps = get_metadata(video_url)
+    print(fps)
     videofps.set(fps)
     framenum.set(0)
     capurl.set(url)
     
 def playPause():
-    start = startpause['text']
-    startpause['text'] = 'Pause' if start == 'Start' else 'Start'
+    start = startpause.cget('text')
+    startpause.configure(text='Pause' if start == 'Start' else 'Start')
     prevtime.set(time.time())
 
 def quittkinter():
-    model.kill(framenum.get() - framenum.get() % 3, 1)
+    model.kill()
     root.destroy()
     
 root = Tk()
@@ -36,42 +38,42 @@ framenum = IntVar(master=root)
 capurl = StringVar(master=root)
 totalseconds = IntVar(master=root)
 
-link = Frame(master=root, bg='white')
-ent = Entry(master=link, width=80, bg='white')
+link = CTkFrame(master=root)
+ent = CTkEntry(master=link, width=80)
 ent.pack(padx=5, pady=5)
 
-btn = Button(master=link, text='Load', width=10, bg='white', command=geturl)
+btn = CTkButton(master=link, text='Load', width=10, command=geturl)
 btn.pack(padx=5, pady=5)
 link.pack(fill=X)
 
-videos = Frame(master=root, bg='white')
+videos = CTkFrame(master=root)
 videos.columnconfigure([0,1], minsize=640)
 
-youtube = Frame(master=videos, bg='white')
+youtube = CTkFrame(master=videos)
 youtube.grid(row=0, column=0, padx=50)
-youtubel = Label(master=youtube, bg='white')
+youtubel = CTkLabel(master=youtube, text='')
 youtubel.pack(pady=5)
 
-webcam = Frame(master=videos, bg='white')
+webcam = CTkFrame(master=videos)
 webcam.grid(row=0, column=1, padx=50, pady=5)
-webl = Label(master=webcam, width=640, bg='white')
+webl = CTkLabel(master=webcam, width=640, text='')
 webl.pack(pady=5)
 
 videos.pack()
 
-videoplayer = Frame(master=root, bg='white')
-startpause = Button(master = videoplayer, text='Start', width=6, bg='white', command=playPause)
+videoplayer = CTkFrame(master=root)
+startpause = CTkButton(master = videoplayer, text='Start', width=6, command=playPause)
 startpause.pack(pady=5)
-slider = Scale(master = videoplayer, variable=timestamp, from_=0, to=0, orient='horizontal', bg='white')
+slider = Scale(master = videoplayer, variable=timestamp, from_=0, to=0, orient='horizontal')
 slider.pack(fill=X, pady=5, expand=True)
 
 videoplayer.pack(fill=X)
-scorefrm = Frame(master=root, bg='white')
-scorelbl = Label(master=scorefrm, text='N/A',bg='white')
+scorefrm = CTkFrame(master=root)
+scorelbl = CTkLabel(master=scorefrm, text='N/A')
 scorelbl.pack(pady=5)
 scorefrm.pack(fill=X)
 
-quit = Button(root, text='Quit', command=quittkinter)
+quit = CTkButton(root, text='Quit', command=quittkinter)
 quit.pack()
 
 # Capture from camera
@@ -88,7 +90,7 @@ def video_stream():
     imgtk = ImageTk.PhotoImage(image=img)
     webl.imgtk = imgtk
     webl.configure(image=imgtk)
-    if startpause['text'] == 'Pause':
+    if startpause.cget("text") == 'Pause':
         if capurl.get():
             print('here')
             videocap[0] = cv2.VideoCapture(capurl.get())
@@ -114,7 +116,7 @@ def video_stream():
                 youtubel.imgtk = imgtk
                 youtubel.configure(image=imgtk)
             else:
-                startpause['text'] == 'Start'
+                startpause.configure(text='Start')
         # q = model.query(framenum.get(), 0)
     videos.after(10, video_stream) 
     
