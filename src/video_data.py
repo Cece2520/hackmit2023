@@ -33,11 +33,10 @@ def get_frames(url, fps):
     key = -1
 
     while True:
-        try:
-            ret, frame = cap.read()
-            # print(frame)
-            if not ret:
-                break
+        ret, frame = cap.read()
+        # print(frame)
+        if not ret:
+            break
 
         cv2.imshow('frame', frame)
         if cv2.waitKey(30) == ord('q'):

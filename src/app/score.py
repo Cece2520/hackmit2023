@@ -38,10 +38,13 @@ WEIGHTS = np.array([0.7, 0.7, 0.7, 1, 1, 1, 1, 1.5, 1.5, 1.5, 1.5, 1, 1, 1.5, 1.
 DIFF_WEIGHTS = np.ones((1,17))
 CUTOFFS = [5, 10, 20, 40]
 
-def score(ref_pose, scored_pose, diff_ref_pose, diff_scored_pose):
+def score(ref_pose, scored_pose, prev_ref_pose, prev_scored_pose):
+    scored_pose = normalize(ref_pose, scored_pose)
     dists = np.sum((ref_pose[:,0:2] - scored_pose[:,0:2])**2, axis=1)
     dist_score = WEIGHTS @ dists
 
+    prev_scored_pose = normalize(prev_ref_pose, prev_scored_pose)
+    diff_ref_pose, diff_scored_pose = (ref_pose - prev_ref_pose, scored_pose - prev_scored_pose)
     diff_dists = np.sqrt(np.sum((diff_ref_pose[:,0:2] - diff_scored_pose[:,0:2])**2, axis=1))
     diff_dists_score = DIFF_WEIGHTS @ diff_dists
 
