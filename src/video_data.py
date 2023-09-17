@@ -38,7 +38,11 @@ def get_frames(url, fps):
         if not ret:
             break
 
-        # DO THINGS
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(30) == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 def get_frame(cap, time_in_millisec):
@@ -47,6 +51,5 @@ def get_frame(cap, time_in_millisec):
     return frame
 
 
-
-my_url, my_fps = get_metadata("https://www.youtube.com/watch?v=lAhALtY-X2s")
+my_url, my_fps = get_metadata("https://youtube.com/shorts/47BLMhB6fAw?feature=shared")
 get_frames(my_url, my_fps)
