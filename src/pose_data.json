@@ -1,6 +1,6 @@
 [
     {
-        "file": "pose_samples/IMG_4736.jpg",
+        "file": "pose_samples/Jonathan_OV.jpg",
         "output": [
             [
                 0.2927200198173523,
@@ -90,7 +90,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4731.jpg",
+        "file": "pose_samples/Alex_K.jpg",
         "output": [
             [
                 0.20618510246276855,
@@ -180,7 +180,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4743.jpg",
+        "file": "pose_samples/Cecilia_r.jpg",
         "output": [
             [
                 0.4891422688961029,
@@ -270,7 +270,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4738.jpg",
+        "file": "pose_samples/Cecilia_I.jpg",
         "output": [
             [
                 0.23648075759410858,
@@ -360,7 +360,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4729.jpg",
+        "file": "pose_samples/Jonathan_K.jpg",
         "output": [
             [
                 0.2757681906223297,
@@ -450,7 +450,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4727.jpg",
+        "file": "pose_samples/Jonathan_I.jpg",
         "output": [
             [
                 0.18739165365695953,
@@ -540,7 +540,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4739.jpg",
+        "file": "pose_samples/Cecilia_Y.jpg",
         "output": [
             [
                 0.2663784325122833,
@@ -630,7 +630,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4742.jpg",
+        "file": "pose_samples/Cecilia_OV.jpg",
         "output": [
             [
                 0.2771829664707184,
@@ -720,7 +720,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4730.jpg",
+        "file": "pose_samples/Jonathan_J.jpg",
         "output": [
             [
                 0.2463023066520691,
@@ -810,7 +810,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4737.jpg",
+        "file": "pose_samples/Jonathan_r.jpg",
         "output": [
             [
                 0.4155620038509369,
@@ -900,7 +900,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4726.jpg",
+        "file": "pose_samples/Alex_Y.jpg",
         "output": [
             [
                 0.28127026557922363,
@@ -990,7 +990,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4728.jpg",
+        "file": "pose_samples/Jonathan_Y.jpg",
         "output": [
             [
                 0.287183552980423,
@@ -1080,7 +1080,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4725.jpg",
+        "file": "pose_samples/Alex_I.jpg",
         "output": [
             [
                 0.24849535524845123,
@@ -1170,7 +1170,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4741.jpg",
+        "file": "pose_samples/Cecilia_OP.jpg",
         "output": [
             [
                 0.2718591094017029,
@@ -1260,7 +1260,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4734.jpg",
+        "file": "pose_samples/Alex_r.jpg",
         "output": [
             [
                 0.3800918459892273,
@@ -1350,7 +1350,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4733.jpg",
+        "file": "pose_samples/Alex_OV.jpg",
         "output": [
             [
                 0.2568918764591217,
@@ -1440,7 +1440,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4732.jpg",
+        "file": "pose_samples/Alex_OP.jpg",
         "output": [
             [
                 0.1887306272983551,
@@ -1530,7 +1530,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4735.jpg",
+        "file": "pose_samples/Jonathan_OP.jpg",
         "output": [
             [
                 0.2579690217971802,
@@ -1620,7 +1620,7 @@
         ]
     },
     {
-        "file": "pose_samples/IMG_4740.jpg",
+        "file": "pose_samples/Cecilia_K.jpg",
         "output": [
             [
                 0.2967482805252075,

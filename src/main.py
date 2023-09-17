@@ -25,7 +25,7 @@ def playPause():
     prevtime.set(time.time())
 
 def quittkinter():
-    model.kill(framenum.get() - framenum.get() % 3, 1)
+    model.kill()
     root.destroy()
     
 root = Tk()

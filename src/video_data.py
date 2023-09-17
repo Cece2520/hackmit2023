@@ -3,6 +3,7 @@
 import cv2
 import numpy as np
 import yt_dlp
+import asyncio
 
 def get_metadata(video_url):
     ydl_opts = {}
@@ -29,6 +30,7 @@ def get_frames(url, fps):
     if not cap.isOpened():
         print('video not opened')
         exit(-1)
+    key = -1
 
     while True:
         try:
