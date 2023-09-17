@@ -17,11 +17,11 @@ def find_scale_factor(ref_pose, scored_pose, center):
 
 def scale(pose, value):
     points = pose[:,0:2] / value
-    return np.concatenate([points, pose[:,2:3]], axis=3)
+    return np.concatenate([points, pose[:,2:3]], axis=1)
 
 def translate(pose, shift):
     points = pose[:,0:2] + shift
-    return np.concatenate([points, pose[:,2:3]], axis=3)
+    return np.concatenate([points, pose[:,2:3]], axis=1)
 
 def normalize(ref_pose, scored_pose):
     ref_center = find_center(ref_pose)
