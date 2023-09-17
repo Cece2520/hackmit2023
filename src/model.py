@@ -1,7 +1,5 @@
 import cv2
-import itertools
 import numpy as np
-import matplotlib.pyplot as plt 
 import tensorflow as tf 
 from collections import deque
 import time
