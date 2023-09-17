@@ -47,6 +47,15 @@ def score(ref_pose, scored_pose, diff_ref_pose, diff_scored_pose):
 
     return (dist_score + diff_dists_score) * 100
 
+def corr_score(ref_tensor, scored_tensor):
+    ref_anomaly = (ref_tensor - np.mean(ref_tensor, axis=0)) * WEIGHTS.reshape(1,-1,1)
+    scored_anomaly = (scored_tensor - np.mean(scored_tensor, axis=0)) * WEIGHTS.reshape(1,-1,1)
+    corrs = np.sum(ref_anomaly * scored_anomaly, axis=(1, 2)) / (np.sqrt(
+       np.sum(ref_anomaly * ref_anomaly, axis=(1, 2)) * np.sum(scored_anomaly * scored_anomaly, axis=(1, 2))))
+    return 50 * (np.mean(corrs) + 1)
+
 def main_score(ref_tensor, scored_tensor):
+    # didn't normalize?
     return score(ref_tensor[-1,:,:], scored_tensor[-1,:,:], ref_tensor[-1,:,:]-ref_tensor[0,:,:], scored_tensor[-1,:,:]-scored_tensor[0,:,:])
+    #return corr_score(ref_tensor[:,:,0:2], scored_tensor[:,:,0:2])
 
