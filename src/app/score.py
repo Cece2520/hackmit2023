@@ -15,8 +15,8 @@ def find_scale_factor(ref_pose, scored_pose, center):
     return np.sum(ref_dists/scored_dists)/len(ref_points)
 
 
-def scale(pose, value):
-    points = pose[:,0:2] / value
+def scale(pose, center, value):
+    points = (pose[:,0:2]-center) / value + center
     return np.concatenate([points, pose[:,2:3]], axis=1)
 
 def translate(pose, shift):
@@ -29,12 +29,12 @@ def normalize(ref_pose, scored_pose):
 
     scored_pose = translate(scored_pose, ref_center - scored_center)
     scale_value = find_scale_factor(ref_pose, scored_pose, ref_center)
-    scored_pose = scale(scored_pose, scale_value)
+    scored_pose = scale(scored_pose, ref_center, scale_value)
     return scored_pose
 
 
 WINDOW_SIZE = 3
-WEIGHTS = np.array([0.7, 0.7, 0.7, 1, 1, 1, 1, 1.5, 1.5, 1.5, 1.5, 1, 1, 1.5, 1.5, 1.5, 1.5])
+WEIGHTS = np.array([0.7, 0.7, 0.7, 1, 1, 1, 1, 1.5, 1.5, 1.5, 1.5, 1, 1, 1.5, 1.5, 1.5, 1.5])*1.5
 DIFF_WEIGHTS = np.ones((1,17))
 CUTOFFS = [5, 10, 20, 40]
 
@@ -53,12 +53,17 @@ def score(ref_pose, scored_pose, prev_ref_pose, prev_scored_pose):
 def corr_score(ref_tensor, scored_tensor):
     ref_anomaly = (ref_tensor - np.mean(ref_tensor, axis=0)) * WEIGHTS.reshape(1,-1,1)
     scored_anomaly = (scored_tensor - np.mean(scored_tensor, axis=0)) * WEIGHTS.reshape(1,-1,1)
+    print(ref_anomaly, scored_anomaly)
     corrs = np.sum(ref_anomaly * scored_anomaly, axis=(1, 2)) / (np.sqrt(
        np.sum(ref_anomaly * ref_anomaly, axis=(1, 2)) * np.sum(scored_anomaly * scored_anomaly, axis=(1, 2))))
     return 50 * (np.mean(corrs) + 1)
 
 def main_score(ref_tensor, scored_tensor):
-    # didn't normalize?
-    return score(ref_tensor[-1,:,:], scored_tensor[-1,:,:], ref_tensor[-1,:,:]-ref_tensor[0,:,:], scored_tensor[-1,:,:]-scored_tensor[0,:,:])
-    #return corr_score(ref_tensor[:,:,0:2], scored_tensor[:,:,0:2])
+    raw_score = score(ref_tensor[-1,:,:], scored_tensor[-1,:,:], ref_tensor[0,:,:], scored_tensor[0,:,:])
+    
+    if raw_score < 200:
+        return 55 + 1.4*np.sqrt(5*(200-raw_score))
+    else:
+        return 55 - 1.5 * np.sqrt(raw_score-200)
+    # return corr_score(ref_tensor[:,:,0:2], scored_tensor[:,:,0:2])
 

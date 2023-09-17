@@ -8,6 +8,7 @@ import numpy as np
 import yt_dlp
 from video_data import *
 from model import *
+import imutils
 
 def geturl():
     video_url = ent.get()
@@ -15,16 +16,15 @@ def geturl():
     exacttime.set(0)
     url, fps = get_metadata(video_url)
     print(fps)
-    videofps.set(fps//3)
+    videofps.set(fps)
     framenum.set(0)
     capurl.set(url)
     
 def playPause():
     start = startpause.cget('text')
     startpause.configure(text='Pause' if start == 'Start' else 'Start')
-    if start == 'Start':
-        time.sleep(3)
     prevtime.set(time.time())
+    lastdownsample.set(time.time())
 
 def quittkinter():
     model.kill()
@@ -39,6 +39,8 @@ videofps = DoubleVar(master=root)
 framenum = IntVar(master=root)
 capurl = StringVar(master=root)
 totalseconds = IntVar(master=root)
+
+lastdownsample = DoubleVar(master=root)
 
 link = CTkFrame(master=root)
 linklbl = CTkLabel(master=link, text="Insert Youtube Link Here!")
@@ -114,13 +116,14 @@ def video_stream():
             framenum.set(framenum.get() + 1)
             ret, frame2 = videocap[0].read()
             if ret:
-                if framenum.get() % 3 == 0:
+                if time.time() - lastdownsample.get() > 0.125:
+                    lastdownsample.set(time.time())
                     model.pass_to_proc(frame1, framenum.get(), 0)
                     model.pass_to_proc(frame2, framenum.get(), 1)
                     score = model.query()
                     if score is not None:
-                        scorelbl.configure(text = str(score))
-                cv2image = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGBA)
+                        scorelbl.configure(text = f"{int(score)}/100")
+                cv2image = imutils.resize(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGBA), height=min(frame2.shape[0], 480))
                 img = Image.fromarray(cv2image)
                 imgtk = ImageTk.PhotoImage(image=img)
                 youtubel.imgtk = imgtk

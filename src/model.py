@@ -84,13 +84,17 @@ class PoseEstimator():
 
                 stack = self.stacked_poses[mode]
                 if stack is None:
+                    # print('non')
                     self.stacked_poses[mode] = result
-                elif stack.shape[0]:
+                elif stack.shape[0] == self.window_size:
+                    # print('shape0')
                     self.stacked_poses[mode] = np.concatenate((stack[1:,:,:], result), axis=0)
                     self.parity += 2 * mode - 1
                     if self.parity == 0:
+                        # print('main score')
                         outputs.put(main_score(self.stacked_poses[0], self.stacked_poses[1]).item())
                 else:
+                    # print('else')
                     self.stacked_poses[mode] = np.concatenate((stack, result), axis=0)
 
 
