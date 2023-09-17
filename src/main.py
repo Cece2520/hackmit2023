@@ -15,13 +15,15 @@ def geturl():
     exacttime.set(0)
     url, fps = get_metadata(video_url)
     print(fps)
-    videofps.set(fps)
+    videofps.set(fps//3)
     framenum.set(0)
     capurl.set(url)
     
 def playPause():
     start = startpause.cget('text')
     startpause.configure(text='Pause' if start == 'Start' else 'Start')
+    if start == 'Start':
+        time.sleep(3)
     prevtime.set(time.time())
 
 def quittkinter():
@@ -39,11 +41,15 @@ capurl = StringVar(master=root)
 totalseconds = IntVar(master=root)
 
 link = CTkFrame(master=root)
-ent = CTkEntry(master=link, width=80)
-ent.pack(padx=5, pady=5)
+linklbl = CTkLabel(master=link, text="Insert Youtube Link Here!")
+link2 = CTkFrame(master=link)
+ent = CTkEntry(master=link2, width=640)
+ent.pack(side=LEFT, padx=5, pady=5)
 
-btn = CTkButton(master=link, text='Load', width=10, command=geturl)
-btn.pack(padx=5, pady=5)
+btn = CTkButton(master=link2, text='Load', width=60, command=geturl)
+btn.pack(side=LEFT, padx=5, pady=5)
+linklbl.pack()
+link2.pack()
 link.pack(fill=X)
 
 videos = CTkFrame(master=root)
@@ -59,22 +65,24 @@ webcam.grid(row=0, column=1, padx=50, pady=5)
 webl = CTkLabel(master=webcam, width=640, text='')
 webl.pack(pady=5)
 
-videos.pack()
+videos.pack(fill=X)
 
 videoplayer = CTkFrame(master=root)
-startpause = CTkButton(master = videoplayer, text='Start', width=6, command=playPause)
+startpause = CTkButton(master = videoplayer, text='Start', width=60, command=playPause)
 startpause.pack(pady=5)
-slider = Scale(master = videoplayer, variable=timestamp, from_=0, to=0, orient='horizontal')
-slider.pack(fill=X, pady=5, expand=True)
-
+# slider = Scale(master = videoplayer, variable=timestamp, from_=0, to=0, orient='horizontal')
+# slider.pack(fill=X, pady=5, expand=True)
 videoplayer.pack(fill=X)
+
 scorefrm = CTkFrame(master=root)
-scorelbl = CTkLabel(master=scorefrm, text='N/A')
+scorelbl = CTkLabel(master=scorefrm, text='N/A',font=('Calibri', 30))
 scorelbl.pack(pady=5)
 scorefrm.pack(fill=X)
 
-quit = CTkButton(root, text='Quit', command=quittkinter)
-quit.pack()
+quitfrm = CTkFrame(master=root)
+quit = CTkButton(quitfrm, text='Quit', width=60, command=quittkinter)
+quit.pack(pady=5)
+quitfrm.pack(fill=X)
 
 # Capture from camera
 webcap = cv2.VideoCapture(0)
@@ -110,6 +118,9 @@ def video_stream():
                 if framenum.get() % 3 == 0:
                     model.pass_to_proc(frame1, framenum.get(), 0)
                     model.pass_to_proc(frame2, framenum.get(), 1)
+                    score = model.query()
+                    if score is not None:
+                        scorelbl.configure(text = str(score))
                 cv2image = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGBA)
                 img = Image.fromarray(cv2image)
                 imgtk = ImageTk.PhotoImage(image=img)
