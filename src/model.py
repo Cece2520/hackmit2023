@@ -117,6 +117,7 @@ class PoseEstimator():
 
 if __name__=="__main__":
     model = PoseEstimator()
+    """
     image = cv2.cvtColor(cv2.imread("pose_test.png"), cv2.COLOR_BGR2RGB)
     print(image.shape)
     model.pass_to_proc(image, 1, 0)
@@ -139,5 +140,25 @@ if __name__=="__main__":
         out = model.query(num_iter-1, 0)
     print(out)
     print(f"Time elapsed for {num_iter} iterations: {time.time() - start}") 
+    """
+    import glob
+    files = glob.glob("pose_samples/*")
+    for file in files:
+        image = cv2.cvtColor(cv2.imread(file), cv2.COLOR_BGR2RGB)
+        model.pass_to_proc(image, file, 0)
+    results = []
+    for file in files:
+        result = model.query(file, 0)
+        while result is None:
+            time.sleep(0.1)
+            result = model.query(file, 0)
+        results.append({
+            "file": file,
+            "output": result.tolist(),
+        })
+    import json
+    with open('pose_data.json', 'w', encoding='utf-8') as f:
+        json.dump(results, f, ensure_ascii=False, indent=4)
+
     model.kill()
 
