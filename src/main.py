@@ -103,7 +103,6 @@ def video_stream():
             print('here')
             videocap[0] = cv2.VideoCapture(capurl.get())
             totalseconds.set(videocap[0].get(cv2.CAP_PROP_FRAME_COUNT) // videofps.get() + 1)
-            slider['to'] = totalseconds.get()
             capurl.set('')
         # print(videocap[0])
         timer = time.time()
