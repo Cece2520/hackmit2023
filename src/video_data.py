@@ -12,13 +12,14 @@ def get_metadata(video_url):
     info_dict = ydl.extract_info(video_url, download=False)
     formats = info_dict.get('formats',None)
 
-    print(len(formats))
+    # print(formats)
 
     for f in formats:
         if f.get('format_note',None) == '360p':
 
             fps = f.get('fps',None)
             url = f.get('url',None)
+            print(fps)
             return (url, fps)
 
 
@@ -30,14 +31,23 @@ def get_frames(url, fps):
         exit(-1)
 
     while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+        try:
+            ret, frame = cap.read()
+            # print(frame)
+            if not ret:
+                break
 
-        # DO THINGS
-
+            # cv2.imshow('frame', frame)
+            
+            if cv2.waitKey(30)&0xFF == ord('q'):
+                break
+        except Exception:
+            pass
+        
     cap.release()
+    cv2.destroyAllWindows()
 
 
-my_url, my_fps = get_metadata("https://www.youtube.com/watch?v=lAhALtY-X2s")
-get_frames(my_url, my_fps)
+if __name__ == '__main__':
+    my_url, my_fps = get_metadata("https://www.youtube.com/watch?v=xtfXl7TZTac")
+    get_frames(my_url, my_fps)
